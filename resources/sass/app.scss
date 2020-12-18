@@ -1,0 +1,16 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.bg-dark { background-color: #00838f !important;}
+
+.bg-dark-2 { background-color:  #006972;}
+
+.logo_200 {
+  width: 200px;
+}
