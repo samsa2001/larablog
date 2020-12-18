@@ -7,8 +7,10 @@ use App\Helpers\CustomUrl;
 use App\Post;
 use App\PostImage;
 use App\Http\Requests\StorePostPost;
+use App\Http\Requests\UpdatePostPut;
 use App\Http\Controllers\Controller;  
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -74,8 +76,17 @@ class PostController extends Controller
         } else {
             $urlClean = CustomUrl::urlTitle(CustomUrl::convertAccentedCharacters($request->url_clean),'-',true);
         }
+        // validamos con las reglas que hemos definido en 'Requests->StorePostPost
         $requestData = $request->validated();
         $requestData['url_clean'] = $urlClean;
+        // validamos con el validador de laravel 
+        // la función make necesita dos parámetros, el segundo son nuestras própias validaciones
+        $validator = Validator::make($requestData, StorePostPost::myRules());
+        if ($validator->fails()) {
+            return redirect('dashboard/post/create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
         // llamada al modelo Post para añadir a la base de datos 
         Post::create($requestData);
         return back()->with('status','Post creado con éxito');
@@ -130,7 +141,7 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(StorePostPost $request, Post $post)
+    public function update(UpdatePostPut $request, Post $post)
     {
         $post->update($request->validated());
 
