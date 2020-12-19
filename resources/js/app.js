@@ -5,17 +5,30 @@
  */
 
 require('./bootstrap');
-
+// importamos lo necesario para que funcione el ckeditor en la sección de subir contenido en los post
+// MyUploadAdapter es necesario para cargar imagenes dentro del ckeditor
+var MyUploadAdapter = require('./assets/ckeditor/MyUploadAdapter.js');
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-ClassicEditor
-    .create(document.querySelector('#content'))
-    .then(editor => {
+function MyCustomUploadAdapterPlugin( editor ) {
+    editor.plugins.get( 'FileRepository' ).createUploadAdapter = ( loader ) => {
+        // Configure the URL to the upload script in your back-end here!
+        return new MyUploadAdapter( loader );
+    };
+}
 
-    })
-    .catch(error => {
-        console.error(error.stack);
-    });
+ClassicEditor
+    .create( document.querySelector( '#content' ), {
+        extraPlugins: [ MyCustomUploadAdapterPlugin ],
+
+        // ...
+    } )
+    .catch( error => {
+        console.log( error );
+    } );   
+// fin del ckeditor
+
+
 /*
 vue y vue-router los importaremos en el archivo assets/route.js
 window.Vue = require('vue');

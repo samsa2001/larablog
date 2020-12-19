@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\dashboard;
 
+use App\Helpers\CustomUrl;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Category;
 use App\Http\Requests\StoreCategoryPost;
+use App\Http\Requests\UpdateCategoryPut;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -49,8 +52,27 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryPost $request)
     {
-        //
-        Category::create($request->validated());
+        // CustomUrl:: es un helper que contiene algunas funciones que se utilizan en nuestra app, el helper está 
+        // en app/Helper . Para que el helper pueda llamarse debe declararse en composer.json -> autoload_dev -> files
+        // y ejecutar en comando desde consola 'composer dump-autoload'
+        if($request->url_clean == ""){
+            $urlClean = CustomUrl::urlTitle(CustomUrl::convertAccentedCharacters($request->title),'-',true);
+        } else {
+            $urlClean = CustomUrl::urlTitle(CustomUrl::convertAccentedCharacters($request->url_clean),'-',true);
+        }
+        // validamos con las reglas que hemos definido en 'Requests->StorePostPost
+        $requestData = $request->validated();
+        $requestData['url_clean'] = $urlClean;
+        // validamos con el validador de laravel 
+        // la función make necesita dos parámetros, el segundo son nuestras própias validaciones
+        $validator = Validator::make($requestData, StoreCategoryPost::myRules());
+        if ($validator->fails()) {
+            return redirect('dashboard/category/create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        // llamada al Category Post para añadir a la base de datos 
+        Category::create($requestData);
 
         return back()->with('status','Categoría creada con éxito');
     }
@@ -84,7 +106,7 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(StoreCategoryPost $request, Category $category)
+    public function update(UpdateCategoryPut $request, Category $category)
     {
         $category->update($request->validated());
 

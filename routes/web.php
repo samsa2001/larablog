@@ -36,6 +36,8 @@ Route::get('home/{nombre?}/{apellido?}', function ($nombre='Eric', $apellido='Po
 */
 Route::resource('dashboard/post', 'dashboard\PostController');
 Route::post('dashboard/post/{post}/image', 'dashboard\PostController@image')->name('post.image');
+// Ruta para cargar las imagenes dentro del editor CKeditor
+Route::post('dashboard/post/content_image', 'dashboard\PostController@contentImage');
 
 Route::resource('dashboard/category', 'dashboard\CategoryController');
 

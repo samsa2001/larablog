@@ -40,4 +40,7 @@
             <small class="text-danger">{{$message}}</small>
         @enderror
     </div>
+{{--     token para la carga de imagenes de CKeditor --}}
+    <input type="hidden" id="token" value="{{ csrf_token()}}">
+    
     <input type="submit" value="Enviar" class="btn btn-primary">

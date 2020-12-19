@@ -10,6 +10,7 @@ use App\Http\Requests\StorePostPost;
 use App\Http\Requests\UpdatePostPut;
 use App\Http\Controllers\Controller;  
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
@@ -171,6 +172,27 @@ class PostController extends Controller
         PostImage::create(['image'=>$filename, 'post_id'=>$post->id]);
 
         return back()->with('status','Imagen cargada con éxito');
+    }
+    /**
+     * Update an image inside de Ckeditor.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Post $post
+     * @return \Illuminate\Http\Response
+     */
+    public function contentImage(Request $request)
+    {
+        // recogemos el campo enviado por el formulario, image, y lo validamos
+        $request->validate([
+            'image' => 'required|mimes:jpg,jpeg,bmp,png|max:2048' // 2Mb
+        ]);
+        // añadimos un nombre, time=segundos desde 1970, + extensión del archivo
+        $filename = time() . "." . $request->image->extension();
+        
+        // copiamos la imagen a la carpeta public\images + filename
+        $request->image->move(public_path('images_post'), $filename);
+
+        return response()->json(["default" => URL::to('/') . '/images_post/' . $filename]);
     }
 
     /**
