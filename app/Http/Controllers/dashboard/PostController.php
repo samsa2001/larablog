@@ -52,7 +52,7 @@ class PostController extends Controller
         $tags = Tag::pluck('id','title');
         $categories = Category::pluck('id','title');
         // cuando el nombre de la variable del controller y la de la vista son igual se pueden pasar con compact
-        $post = new Post();
+        $post = new Post();  
         return view('dashboard.post.create',compact('post', 'categories', 'tags'));
         //return view('dashboard.post.create',['post'=>new Post(), 'categories'=>$categories, 'tags'=>$tags]);
     }
