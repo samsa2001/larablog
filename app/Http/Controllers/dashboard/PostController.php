@@ -51,7 +51,10 @@ class PostController extends Controller
         // post para rellenar los campos por defecto
         $tags = Tag::pluck('id','title');
         $categories = Category::pluck('id','title');
-        return view('dashboard.post.create',['post'=>new Post(), 'categories'=>$categories, 'tags'=>$tags]);
+        // cuando el nombre de la variable del controller y la de la vista son igual se pueden pasar con compact
+        $post = new Post();
+        return view('dashboard.post.create',compact('post', 'categories', 'tags'));
+        //return view('dashboard.post.create',['post'=>new Post(), 'categories'=>$categories, 'tags'=>$tags]);
     }
 
     /**
@@ -90,11 +93,13 @@ class PostController extends Controller
                         ->withErrors($validator)
                         ->withInput();
         }
-        // llamada al modelo Post para añadir a la base de datos 
-        Post::create($requestData);
+        // llamada al modelo Post para añadir a la base de datos
+        // creamos un post nuevo con los datos y lo alamacenamos en una funcion 
+        $post = Post::create($requestData);
+        // sincronizamos las etiquetas en la tabla post_tag de la relación muchos a muchos
+        $post->tags()->sync($request->tags_id);
         // añadimos una imagen vacia para este post, ultimo creado
-        $ultimoPost= Post::orderBy('created_at', 'desc')->first();
-        PostImage::create(['image'=>"", 'post_id'=>$ultimoPost->id]);
+        PostImage::create(['image'=>"", 'post_id'=>$post->id]);
 
         return back()->with('status','Post creado con éxito');
         
@@ -140,7 +145,9 @@ class PostController extends Controller
         // pluck devuelve una coleccion pero sólo de las claves especificadas
         $tags = Tag::pluck('id','title');
         $categories = Category::pluck('id','title');
-        return view('dashboard.post.edit',['post' => $post, 'categories'=>$categories, 'tags'=>$tags]);
+        // cuando el nombre de la variable del controller y la de la vista son igual se pueden pasar con compact
+        return view('dashboard.post.edit',compact('post', 'categories', 'tags'));
+        //return view('dashboard.post.edit',['post' => $post, 'categories'=>$categories, 'tags'=>$tags]);
     }
 
     /**
@@ -152,6 +159,12 @@ class PostController extends Controller
      */
     public function update(UpdatePostPut $request, Post $post)
     {
+/*         attach añade un elemento a la relacion muchos a muchos de modelo, detach lo eliminia
+        en este caso añadimos al post la tag con id 1
+        $post->tags()->attach(1); */
+        // sync realiza tanto attach como detach del array mandado al post para sincronizar las tags
+        $post->tags()->sync($request->tags_id);
+
         $post->update($request->validated());
 
         return back()->with('status','Post actualizado con éxito');

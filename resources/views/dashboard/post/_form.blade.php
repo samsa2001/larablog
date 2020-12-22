@@ -30,7 +30,7 @@
         <label for="tags_id">Etiquetas</label>
         <select multiple name="tags_id[]" id="tags_id" class="form-control">
             @foreach ($tags as $title=>$id)
-                <option {{ in_array($id,old('tags_id') ?: []) ? "selected": "" }} value="{{ $id }}">{{ $title }}</option>
+                <option {{ in_array($id,old('tags_id') ?: $post->tags()->pluck('id')->toArray()) ? "selected": "" }} value="{{ $id }}">{{ $title }}</option>
             @endforeach            
         </select>
     </div>
