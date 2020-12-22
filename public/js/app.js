@@ -53874,10 +53874,8 @@ function MyCustomUploadAdapterPlugin(editor) {
 }
 
 _ckeditor_ckeditor5_build_classic__WEBPACK_IMPORTED_MODULE_0___default.a.create(document.querySelector('#content'), {
-  extraPlugins: [MyCustomUploadAdapterPlugin] // ...
-
-})["catch"](function (error) {
-  console.log(error);
+  extraPlugins: [MyCustomUploadAdapterPlugin]
+})["catch"](function (error) {//console.log( error );
 }); // fin del ckeditor
 
 /*

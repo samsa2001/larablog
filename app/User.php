@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use App\Rol;
 
 class User extends Authenticatable
@@ -40,5 +41,15 @@ class User extends Authenticatable
 
     public function rol(){
         return $this->belongsTo(Rol::class);
+    }
+
+    // accesor getNOMBREATRIBUTOAtribute
+    // devuelve un atributo del modelo con las variaciones que le indiques GET
+    public function getNameAttribute($value){
+        return strtoupper($value);
+    }
+    // mutador igual que el accesor pero cambiando el valor en el modelo SET
+    public function setPasswordAttribute($value){
+        $this->attributes["password"] =Hash::make($value);
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserPost;
 use App\Http\Requests\UpdateUserPut;
 
@@ -57,7 +56,7 @@ class UserController extends Controller
             'rol_id' => 1,// por defecto todos lis usuarios se registran como admin
             'surname' => $request['surname'],
             'email' => $request['email'],
-            'password' => Hash::make($request['password']),
+            'password' => $request['password'],
         ]);
 
         return back()->with('status','Usuario creado con éxito');

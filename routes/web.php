@@ -54,3 +54,11 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('dashboard/user', 'dashboard\UserController');
+
+Route::resource('dashboard/contact', 'dashboard\ContactController')->only('index','show','destroy');
+
+Route::resource('dashboard/post-comment', 'dashboard\PostCommentController')->only('index','show','destroy');
+// devuelve los comentarios de un post
+Route::get('dashboard/post-comment/{post}/post', 'dashboard\PostCommentController@post')->name('post-comment.post');
+Route::get('dashboard/post-comment/j-show/{postComment}', 'dashboard\PostCommentController@jshow');
+Route::post('dashboard/post-comment/process/{postComment}', 'dashboard\PostCommentController@process');

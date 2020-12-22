@@ -20,11 +20,9 @@ function MyCustomUploadAdapterPlugin( editor ) {
 ClassicEditor
     .create( document.querySelector( '#content' ), {
         extraPlugins: [ MyCustomUploadAdapterPlugin ],
-
-        // ...
     } )
     .catch( error => {
-        console.log( error );
+        //console.log( error );
     } );   
 // fin del ckeditor
 

@@ -8,7 +8,8 @@ use App\Post;
 use App\PostImage;
 use App\Http\Requests\StorePostPost;
 use App\Http\Requests\UpdatePostPut;
-use App\Http\Controllers\Controller;  
+use App\Http\Controllers\Controller;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class PostController extends Controller
     {
         // almacenamos en $posts los datos obtenidos con el modelo Post. Para recuperar los datos podemos utilizar el get() o paginate()
         //$posts = Post::orderBy('created_at','desc')->get();
-        $posts = Post::orderBy('created_at','desc')->paginate(5);
+        $posts = Post::orderBy('created_at','desc')->paginate(10);
         return view('dashboard.post.index',['posts' => $posts]);
     }
 
@@ -48,8 +49,9 @@ class PostController extends Controller
     {
         // tenenmos que pasar como parámetro una instancia a un post vacío porque la view _form necesita una variable
         // post para rellenar los campos por defecto
+        $tags = Tag::pluck('id','title');
         $categories = Category::pluck('id','title');
-        return view('dashboard.post.create',['post'=>new Post(), 'categories'=>$categories]);
+        return view('dashboard.post.create',['post'=>new Post(), 'categories'=>$categories, 'tags'=>$tags]);
     }
 
     /**
@@ -90,6 +92,10 @@ class PostController extends Controller
         }
         // llamada al modelo Post para añadir a la base de datos 
         Post::create($requestData);
+        // añadimos una imagen vacia para este post, ultimo creado
+        $ultimoPost= Post::orderBy('created_at', 'desc')->first();
+        PostImage::create(['image'=>"", 'post_id'=>$ultimoPost->id]);
+
         return back()->with('status','Post creado con éxito');
         
     }
@@ -130,9 +136,11 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {        
+        //dd($post->tags);
         // pluck devuelve una coleccion pero sólo de las claves especificadas
+        $tags = Tag::pluck('id','title');
         $categories = Category::pluck('id','title');
-        return view('dashboard.post.edit',['post' => $post, 'categories'=>$categories]);
+        return view('dashboard.post.edit',['post' => $post, 'categories'=>$categories, 'tags'=>$tags]);
     }
 
     /**
@@ -167,6 +175,15 @@ class PostController extends Controller
         
         // copiamos la imagen a la carpeta public\images + filename
         $request->image->move(public_path('images'), $filename);
+        
+        // comprobamos si ese post ya tiene una imagen principal
+        $postsConEsaImagen= PostImage::where('post_id',$post->id)->get(); 
+        if ($postsConEsaImagen != null){
+            //dd($postsConEsaImagen);
+            foreach($postsConEsaImagen as $postConEsaImagen){
+                PostImage::where('id',$postConEsaImagen->id)->delete();
+            }
+        }
 
         // añadimos a la tabla PostImages un campo nuevo
         PostImage::create(['image'=>$filename, 'post_id'=>$post->id]);

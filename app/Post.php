@@ -2,6 +2,7 @@
 
 namespace App;
 use App\PostImage;
+use App\Tag;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,5 +16,16 @@ class Post extends Model
     }
     public function image(){
         return $this->hasOne(PostImage::class);
+    }
+    public function lastPost(){
+        return $this->first();
+    }
+
+    public function tags(){
+        // la relacion a muchos necesita una tabla pivote en nuestro caso post_tag 
+        // si hemos nombrado la tabla con los modelos a relacionarse en sigular y alfabeticamente 
+        // y hemos añadido el modelo_id a los campos podemos omitir los parámetros si no utilizar
+        //return $this->belongsToMany(Tag::class, 'post_tag','post_id','tag_id')
+        return $this->belongsToMany(Tag::class);
     }
 }

@@ -19,10 +19,18 @@
         @enderror
     </div>
     <div class="form-group">
-        <label for="category">Categoria</label>
+        <label for="category_id">Categoria</label>
         <select name="category_id" id="category_id" class="form-control">
             @foreach ($categories as $title=>$id)
                 <option {{ $post->category_id == $id ? 'selected="selected"':''}} value="{{ $id }}">{{ $title }}</option>
+            @endforeach            
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="tags_id">Etiquetas</label>
+        <select multiple name="tags_id[]" id="tags_id" class="form-control">
+            @foreach ($tags as $title=>$id)
+                <option {{ in_array($id,old('tags_id') ?: []) ? "selected": "" }} value="{{ $id }}">{{ $title }}</option>
             @endforeach            
         </select>
     </div>
