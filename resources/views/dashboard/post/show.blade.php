@@ -2,7 +2,6 @@
 @section('content')  
 
 @include('dashboard.partials.validation-error')   
-    <p class="small">Este archivo es de prueba 1</p> 
     <form action="{{ route("post.store")}}" method="POST">
     <?php // @csrf añade un token de seguridad para enviar el form, sin este token el formulario no funciona ?>
     @csrf  
